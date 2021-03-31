@@ -1,20 +1,68 @@
+from rest_framework import mixins, viewsets, filters
+from article.serializers import ArticleSerializer, CategorySerializer, CategoryDetailSerializer, TagSerializer, \
+    ArticleDetailSerializer, AvatarSerializer
+from article.permissions import IsAdminUserOrReadOnly
+from article.models import Article, Category, Tag, Avatar
+
+"""文章视图集"""
+class ArticleViewSet(viewsets.ModelViewSet):
+
+    queryset = Article.objects.all()
+    # 文章序列化
+    # serializer_class = ArticleSerializer
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return ArticleSerializer
+        else:
+            return ArticleDetailSerializer
+    # 权限
+    permission_classes = [IsAdminUserOrReadOnly]
+
+    # 筛选
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title']
+
+
+"""分类视图集"""
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset =  Category.objects.all()
+    permission_classes = [IsAdminUserOrReadOnly]
+    # serializer_class = CategorySerializer
+    # 重写 serializer_class
+    def get_serializer_class(self):
+        print(self.action)
+        if self.action == 'list':
+            return CategorySerializer
+        else:
+            return CategoryDetailSerializer
+
+
+"""标签视图集"""
+class TagViewSet(viewsets.ModelViewSet):
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+    permission_classes = [IsAdminUserOrReadOnly]
+
+
+"""图片视图集"""
+class AvatarViewSet(viewsets.ModelViewSet):
+    queryset = Avatar.objects.all()
+    serializer_class = AvatarSerializer
+    permission_classes = [IsAdminUserOrReadOnly]
+
+
+"""之前的代码"""
 # from django.http import Http404
+# from article.serializers import ArticleListSerializer, ArticleDetailSerializer
 # from django_filters.rest_framework import DjangoFilterBackend
 # from rest_framework.decorators import api_view
 # from rest_framework.permissions import IsAdminUser
 # from rest_framework.response import Response
 # from rest_framework.serializers import Serializer
-# from rest_framework.views import APIView
-from rest_framework import mixins, viewsets, filters
 # from rest_framework import generics
-from article.serializers import ArticleSerializer, CategorySerializer, CategoryDetailSerializer, TagSerializer, \
-    ArticleDetailSerializer
-from article.permissions import IsAdminUserOrReadOnly
-# from article.serializers import ArticleListSerializer, ArticleDetailSerializer
-from article.models import Article, Category, Tag
-
-
+# from rest_framework.views import APIView
 # from rest_framework import status
+# from rest_framework import mixins
 
 # 文章列表
 # @api_view(['GET', 'POST'])
@@ -78,41 +126,3 @@ from article.models import Article, Category, Tag
 # class ArticleDetail(generics.RetrieveUpdateDestroyAPIView):
 #     queryset = Article.objects.all()
 #     serializer_class = ArticleDetailSerializer
-
-
-class ArticleViewSet(viewsets.ModelViewSet):
-
-    queryset = Article.objects.all()
-
-    # 文章序列化
-    # serializer_class = ArticleSerializer
-    def get_serializer_class(self):
-        if self.action == 'list':
-            return ArticleSerializer
-        else:
-            return ArticleDetailSerializer
-    # 权限
-    permission_classes = [IsAdminUserOrReadOnly]
-
-    # 筛选
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['title']
-
-
-class CategoryViewSet(viewsets.ModelViewSet):
-    queryset =  Category.objects.all()
-    permission_classes = [IsAdminUserOrReadOnly]
-    # serializer_class = CategorySerializer
-    # 重写 serializer_class
-    def get_serializer_class(self):
-        print(self.action)
-        if self.action == 'list':
-            return CategorySerializer
-        else:
-            return CategoryDetailSerializer
-
-
-class TagViewSet(viewsets.ModelViewSet):
-    queryset = Tag.objects.all()
-    serializer_class = TagSerializer
-    permission_classes = [IsAdminUserOrReadOnly]
